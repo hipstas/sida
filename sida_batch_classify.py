@@ -68,10 +68,12 @@ def main(argv):
         csv_path = os.path.join(dir_path, media_basename + '__' + model_basename+'.csv')
 
         with open(csv_path, 'w') as fo:
+            i = 0
             for value in classifier_output:
-                start = round(value * resolution_secs, 4)
+                start = round(i * resolution_secs, 4)
                 duration = round(resolution_secs, 4)
-                fo.write(str(start) + ',' + str(duration) + '\n')
+                fo.write(str(start) + ',' + str(duration) + ',' + str(value) + '\n')
+                i += 1
 
         if using_temp_wav == True:
             os.remove(wav_pathname)

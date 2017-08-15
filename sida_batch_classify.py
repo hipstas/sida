@@ -28,6 +28,7 @@ def main(argv):
     except getopt.GetoptError:
         print "sida_batch_classify.py <pkl model pathname> <directory pathname>"
         sys.exit(2)
+
     print('>> Model: ' + model_path)
     print('>> Directory: ' + dir_path)
 
@@ -36,9 +37,8 @@ def main(argv):
     model_basename = os.path.basename(model_path).replace('.pkl','')
 
     media_pathnames = attk.find_media_paths(dir_path)
-    #print(media_pathnames[:10])
 
-    for media_pathname in media_pathnames[:1]:
+    for media_pathname in media_pathnames:
         tic=timeit.default_timer()
 
         print('    >> Classifying '+ media_pathname.split('/')[-1])
@@ -50,12 +50,6 @@ def main(argv):
         else:
             wav_pathname = attk.temp_wav_path(wav_pathname)
             using_temp_wav = True
-
-        #unseen_mfccs = attk.get_mfccs_and_deltas(wav_pathname)
-
-        #results = classifier.predict(unseen_mfccs)  ## Predicting new observation
-
-        #resolution_secs = 5.0
 
         snd = AudioFileClip.AudioFileClip(wav_pathname)
 
@@ -79,12 +73,10 @@ def main(argv):
             print(value)
 
         with open(csv_path, 'w') as fo:
-            fo.write('okokokok')
             for value in classifier_output:
                 start = round(value * resolution_secs, 4)
                 duration = round(resolution_secs, 4)
-                fo.write(str(start) + ',' + str(start + duration) + '\n')
-
+                fo.write(str(start) + ',' + str(duration) + '\n')
 
         if using_temp_wav == True:
             os.remove(wav_pathname)

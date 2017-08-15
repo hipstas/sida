@@ -67,11 +67,6 @@ def main(argv):
 
         csv_path = os.path.join(dir_path, media_basename + '__' + model_basename+'.csv')
 
-        print(classifier_output)
-
-        for value in classifier_output:
-            print(value)
-
         with open(csv_path, 'w') as fo:
             for value in classifier_output:
                 start = round(value * resolution_secs, 4)
@@ -81,7 +76,7 @@ def main(argv):
         if using_temp_wav == True:
             os.remove(wav_pathname)
 
-        print("       >> Completed in " + str(round(timeit.default_timer() - tic, 4))) + " seconds"
+        print("     >> Completed in " + str(round(timeit.default_timer() - tic, 4))) + " seconds\n"
 
 
 if __name__ == "__main__":

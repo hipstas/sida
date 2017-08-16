@@ -48,7 +48,7 @@ def main(argv):
             using_temp_wav = False
 
         else:
-            wav_pathname = attk.temp_wav_path(wav_pathname)
+            wav_pathname = attk.temp_wav_path(media_pathname)
             using_temp_wav = True
 
         snd = AudioFileClip.AudioFileClip(wav_pathname)

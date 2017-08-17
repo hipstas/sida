@@ -6,6 +6,7 @@ import numpy as np
 from sklearn.externals import joblib
 from moviepy.audio.io import AudioFileClip
 import timeit
+import random
 
 
 def classify_clip(classifier, clip_pathname):
@@ -38,47 +39,52 @@ def main(argv):
 
     media_pathnames = attk.find_media_paths(dir_path)
 
+    random.shuffle(media_pathnames)
+
     for media_pathname in media_pathnames:
-        tic=timeit.default_timer()
-
-        print('    >> Classifying '+ media_pathname.split('/')[-1])
-
-        if media_pathname[-4:].lower() == '.wav':
-            wav_pathname = media_pathname
-            using_temp_wav = False
-
-        else:
-            wav_pathname = attk.temp_wav_path(media_pathname)
-            using_temp_wav = True
-
-        snd = AudioFileClip.AudioFileClip(wav_pathname)
-
-        classifier_output = []
-
-        for i in range(int(attk.duration(wav_pathname)/resolution_secs)):
-            try:
-                snd.subclip(i * resolution_secs , (i * resolution_secs) + resolution_secs).write_audiofile('/tmp/temp_sida_clip.wav')
-                classifier_output.append(classify_clip(classifier, '/tmp/temp_sida_clip.wav'))
-            except Exception as e:
-                classifier_output.append(0.0)
-                print(e)
 
         media_basename = '.'.join(os.path.basename(media_pathname).split('.')[:-1])
 
-        csv_path = os.path.join(dir_path, media_basename + '__' + model_basename+'.csv')
+        csv_path = os.path.join(dir_path, media_basename + '__' + model_basename+'_'+str(resolution_secs)+'.csv')
 
-        with open(csv_path, 'w') as fo:
-            i = 0
-            for value in classifier_output:
-                start = round(i * resolution_secs, 4)
-                duration = round(resolution_secs, 4)
-                fo.write(str(start) + ',' + str(duration) + ',' + str(value) + '\n')
-                i += 1
+        if not os.path.isfile(csv_path):
 
-        if using_temp_wav == True:
-            os.remove(wav_pathname)
+            tic = timeit.default_timer()
 
-        print("     >> Completed in " + str(round(timeit.default_timer() - tic, 4))) + " seconds\n"
+            print('    >> Classifying '+ media_pathname.split('/')[-1])
+
+            if media_pathname[-4:].lower() == '.wav':
+                wav_pathname = media_pathname
+                using_temp_wav = False
+
+            else:
+                wav_pathname = attk.temp_wav_path(media_pathname)
+                using_temp_wav = True
+
+            snd = AudioFileClip.AudioFileClip(wav_pathname)
+
+            classifier_output = []
+
+            for i in range(int(attk.duration(wav_pathname)/resolution_secs)):
+                try:
+                    snd.subclip(i * resolution_secs , (i * resolution_secs) + resolution_secs).write_audiofile('/tmp/temp_sida_clip.wav')
+                    classifier_output.append(classify_clip(classifier, '/tmp/temp_sida_clip.wav'))
+                except Exception as e:
+                    classifier_output.append(0.0)
+                    print(e)
+
+            with open(csv_path, 'w') as fo:
+                i = 0
+                for value in classifier_output:
+                    start = round(i * resolution_secs, 4)
+                    duration = round(resolution_secs, 4)
+                    fo.write(str(start) + ',' + str(duration) + ',' + str(value) + '\n')
+                    i += 1
+
+            if using_temp_wav == True:
+                os.remove(wav_pathname)
+
+            print("     >> Completed in " + str(round(timeit.default_timer() - tic, 4))) + " seconds\n"
 
 
 if __name__ == "__main__":

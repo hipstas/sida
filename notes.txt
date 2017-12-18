@@ -1,19 +1,25 @@
 
 # SIDA setup steps
 
+
 - Create VPS on Digital Ocean, or install Docker on on your server of choice.
 
 
 Model training is based on two types of collections: media sets and label sets.
 
 - Audio: ZIP file(s) containing MP3s, WAVs, and/or MP4 videos
+    - Sample datasets by speaker: http://xtra.arloproject.com/datasets/audio/AAPB_Hand_Labeled/
 
 - Labels: CSV file(s), 5 columns:
 
 ```
+"Media file basename","Start","Duration","Label","Labeled by"
 spe_1995_0423_clinton,40.0,1.0,"Bill Clinton","Stephen Reid McLaughlin"
 spe_1995_1127_clinton,237.0,1.0,"Bill Clinton","Stephen Reid McLaughlin"
 ```
+
+
+
 
 We can combine multiple ad hoc collections of labeled audio to train models, downsampling as needed to get the right balance.
 
